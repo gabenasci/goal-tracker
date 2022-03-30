@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, Button } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default function App() {
+  const [modalIsVisible, setModalIsVisible] = useState(false);
   const [goals, setGoals] = useState([]);
+
+  function startAddGoalHandler() {
+    setModalIsVisible(true);
+  }
+
+  function endAddGoalHandler() {
+    setModalIsVisible(false);
+  }
 
   function addGoalHandler(enteredGoalText) {
     setGoals((currentGoals) => [
       ...currentGoals,
       { text: enteredGoalText, id: Math.random().toString() },
     ]);
+    endAddGoalHandler();
   }
 
   function deleteGoalHandler(id) {
@@ -24,8 +35,15 @@ export default function App() {
   // ONLY USE SCROLLVIEW FOR LIMITED AMOUNTS OF CONTENT
 
   return (
+    <>
+    <StatusBar style="light" />
     <View style={styles.appContainer}>
-      <GoalInput onAddGoal={addGoalHandler} />
+      <Text style={styles.title}>Goalkeeper</Text>
+      <GoalInput
+        isVisible={modalIsVisible}
+        onAddGoal={addGoalHandler}
+        onCancel={endAddGoalHandler}
+      />
       <View style={styles.goalsContainer}>
         <FlatList
           data={goals}
@@ -43,7 +61,15 @@ export default function App() {
           }}
         />
       </View>
+      <View style={styles.button}>
+        <Button
+          title="Add New Goal"
+          color="#6044ff"
+          onPress={startAddGoalHandler}
+        />
+      </View>
     </View>
+    </>
   );
 }
 
@@ -51,10 +77,25 @@ const styles = StyleSheet.create({
   appContainer: {
     flex: 1, // makes parent component take all space
     paddingTop: 50,
-    paddingHorizontal: 30,
-    backgroundColor: "#ffffff",
+    paddingHorizontal: 20,
+    backgroundColor: '#1e085a',
+    paddingBottom: 35,
+  },
+  title: {
+    color: '#fff',
+    fontWeight: "200",
+    fontSize: 30,
+    textAlign: 'center',
+    paddingBottom: 18,
+    marginHorizontal: 8,
+    borderBottomWidth: 1,
+    borderColor: '#ccc'
   },
   goalsContainer: {
-    flex: 4, // child component takes 4/5 space
+    flex: 9, // child component takes 4/5 space
+    marginTop: 15
   },
+  button: {
+    paddingHorizontal: 8
+  }
 });
